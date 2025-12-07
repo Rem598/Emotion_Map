@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div style="max-width: 48rem; margin: 0 auto;">
+    <div class="card card-large">
+        <h1 style="font-size: 1.875rem; font-weight: bold; color: #1f2937; margin-bottom: 1rem;">Try This Intervention</h1>
+        
+        <div class="suggestion-box">
+            <div class="suggestion-context">You logged: <strong>{{ mood.get_emotion_display }}</strong> (Intensity: {{ mood.intensity }}/10)</div>
+            <h2 class="suggestion-title">{{ intervention.title }}</h2>
+            <p class="suggestion-description">{{ intervention.description }}</p>
+        </div>
+
+        <div style="margin-bottom: 1.5rem;">
+            <p style="color: #6b7280; margin-bottom: 1rem;">Did this intervention help?</p>
+            
+            <form method="post">
+                {% csrf_token %}
+                <div class="feedback-options">
+                    {% for radio in form.result %}
+                    <label class="feedback-option">
+                        {{ radio.tag }}
+                        <span class="feedback-label">{{ radio.choice_label }}</span>
+                    </label>
+                    {% endfor %}
+                </div>
+                
+                <button type="submit" class="btn btn-primary btn-full" style="margin-top: 1.5rem;">
+                    Submit Feedback
+                </button>
+            </form>
+        </div>
+
+        <div style="text-align: center;">
+            <a href="{% url 'dashboard' %}" style="color: #9333ea; text-decoration: none;">Skip to Dashboard</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

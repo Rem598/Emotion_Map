@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div>
+    <h1 class="page-title">Emotional Heatmap</h1>
+    <p class="page-subtitle">Your average mood intensity by time of day and day of week</p>
+
+    <div class="card card-large">
+        <canvas id="heatmapChart" height="400"></canvas>
+    </div>
+
+    <div class="instructions-box">
+        <h2 class="instructions-title">How to Read This</h2>
+        <ul class="instructions-list">
+            <li>Each row represents a day of the week</li>
+            <li>Each column represents an hour of the day (0-23)</li>
+            <li>Darker colors indicate higher emotional intensity</li>
+            <li>White/light colors mean no data for that time slot</li>
+        </ul>
+    </div>
+</div>
+
+<!-- Hidden data for JavaScript -->
+<script id="heatmap-data" type="application/json">
+{{ heatmap_data|safe }}
+</script>
+{% endblock %}
+
+{% block extra_js %}
+<script src="/static/js/heatmap.js"></script>
+{% endblock %}

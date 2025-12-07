@@ -1,0 +1,44 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}Emotion Map{% endblock %}</title>
+    
+    <!-- External Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-container">
+            <a href="{% url 'home' %}" class="nav-logo">💜 Emotion Map</a>
+            <div class="nav-links">
+                <a href="{% url 'dashboard' %}" class="nav-link">Dashboard</a>
+                <a href="{% url 'log_mood' %}" class="nav-link-primary">Log Mood</a>
+                <a href="{% url 'heatmap' %}" class="nav-link">Heatmap</a>
+                <a href="{% url 'correlations' %}" class="nav-link">Insights</a>
+                <a href="{% url 'interventions_list' %}" class="nav-link">Interventions</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <p>Supporting SDG 3: Good Health and Well-being 🌍</p>
+        <p style="font-size: 0.875rem; margin-top: 0.5rem;">Community-powered emotional self-awareness</p>
+    </footer>
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div style="max-width: 48rem; margin: 0 auto;">
+    <div class="card card-large">
+        <h1 style="font-size: 1.875rem; font-weight: bold; color: #1f2937; margin-bottom: 1rem;">Submit New Intervention</h1>
+        <p style="color: #6b7280; margin-bottom: 1.5rem;">Share a micro-intervention that has helped you manage emotions</p>
+        
+        <form method="post">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label class="form-label">Intervention Title</label>
+                {{ form.title }}
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Description</label>
+                {{ form.description }}
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Your Name/Alias (Optional)</label>
+                {{ form.submitted_by }}
+            </div>
+
+            <button type="submit" class="btn btn-success btn-full">
+                Submit Intervention
+            </button>
+        </form>
+
+        <div class="tips-box">
+            <h3 class="tips-title">💡 Tips for Good Interventions:</h3>
+            <ul class="tips-list">
+                <li>Keep it simple and actionable (under 2 minutes)</li>
+                <li>Be specific about the steps</li>
+                <li>Focus on evidence-based techniques</li>
+                <li>Examples: "Take 3 deep breaths", "Drink a glass of water", "Stretch for 30 seconds"</li>
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}

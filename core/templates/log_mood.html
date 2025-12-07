@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div style="max-width: 48rem; margin: 0 auto;">
+    <div class="card card-large">
+        <h1 style="font-size: 1.875rem; font-weight: bold; color: #1f2937; margin-bottom: 1.5rem;">Log Your Mood</h1>
+        
+        <form method="post">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label class="form-label">How are you feeling?</label>
+                {{ form.emotion }}
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Intensity (1-10)</label>
+                {{ form.intensity }}
+                <p class="form-help">{{ form.intensity.help_text }}</p>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Tags (Optional)</label>
+                {{ form.tags }}
+                <p class="form-help">{{ form.tags.help_text }}</p>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Note (Optional)</label>
+                {{ form.note }}
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-full">
+                Log Mood & Get Intervention
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}

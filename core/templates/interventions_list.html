@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div>
+    <div class="page-header">
+        <div>
+            <h1 class="page-title">Community Interventions</h1>
+            <p class="page-subtitle">Ranked by community success scores</p>
+        </div>
+        <a href="{% url 'submit_intervention' %}" class="btn btn-success">+ Submit Intervention</a>
+    </div>
+
+    {% if interventions %}
+    <div>
+        {% for item in interventions %}
+        <div class="intervention-list-card">
+            <div class="intervention-header">
+                <h3 style="font-size: 1.25rem; font-weight: bold; color: #1f2937;">{{ item.intervention.title }}</h3>
+                <div style="text-align: right;">
+                    <div class="intervention-score {% if item.score > 0.5 %}score-positive{% elif item.score < 0 %}score-negative{% else %}score-neutral{% endif %}" style="font-size: 1.5rem;">
+                        {{ item.score|floatformat:2 }}
+                    </div>
+                    <div style="font-size: 0.875rem; color: #9ca3af;">{{ item.votes }} votes</div>
+                </div>
+            </div>
+            
+            <p style="color: #374151; margin: 0.75rem 0;">{{ item.intervention.description }}</p>
+            
+            <div class="intervention-meta">
+                <span>Submitted by: {{ item.intervention.submitted_by }}</span>
+                <span>{{ item.intervention.created_at|date:"M d, Y" }}</span>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <p class="empty-state-text">No interventions yet. Be the first to submit one!</p>
+        <a href="{% url 'submit_intervention' %}" class="btn btn-success" style="margin-top: 1rem;">Submit First Intervention</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

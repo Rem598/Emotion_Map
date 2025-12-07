@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="hero">
+    <h1 class="hero-title">
+        Welcome to <span class="hero-title-accent">Emotion Map</span>
+    </h1>
+    <p class="hero-subtitle">
+        Track your emotional well-being through fast logging and community-powered micro-interventions.
+        Gain insights through data-driven visualizations.
+    </p>
+    
+    <div class="hero-buttons">
+        <a href="{% url 'log_mood' %}" class="btn btn-primary">Start Logging 🚀</a>
+        <a href="{% url 'dashboard' %}" class="btn btn-secondary">View Dashboard 📊</a>
+    </div>
+
+    <!-- Feature Cards -->
+    <div class="feature-grid">
+        <div class="feature-card">
+            <div class="feature-icon">📝</div>
+            <h3 class="feature-title">Fast Mood Logging</h3>
+            <p class="feature-description">Log emotions, intensity, and context in seconds</p>
+        </div>
+        
+        <div class="feature-card">
+            <div class="feature-icon">🎯</div>
+            <h3 class="feature-title">Smart Interventions</h3>
+            <p class="feature-description">Get micro-interventions based on community success data</p>
+        </div>
+        
+        <div class="feature-card">
+            <div class="feature-icon">📈</div>
+            <h3 class="feature-title">Data Insights</h3>
+            <p class="feature-description">Visualize patterns with heatmaps and correlations</p>
+        </div>
+    </div>
+
+    <!-- SDG Badge -->
+    <div class="sdg-badge">
+        <p class="sdg-label">🌍 Supporting</p>
+        <p class="sdg-title">SDG 3: Good Health and Well-being</p>
+    </div>
+</div>
+{% endblock %}

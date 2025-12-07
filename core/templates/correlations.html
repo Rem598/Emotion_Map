@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div>
+    <h1 class="page-title">Pattern Insights</h1>
+    <p class="page-subtitle">Discover correlations between your activities and emotional states</p>
+
+    {% if correlations %}
+    <div class="correlation-grid">
+        {% for correlation in correlations %}
+        <div class="correlation-card">
+            <div class="correlation-header">
+                <h3 class="correlation-tag">#{{ correlation.tag }}</h3>
+                <span class="correlation-intensity {% if correlation.avg_intensity > 7 %}intensity-high{% elif correlation.avg_intensity > 4 %}intensity-medium{% else %}intensity-low{% endif %}">
+                    {{ correlation.avg_intensity }}
+                </span>
+            </div>
+            
+            <div class="correlation-details">
+                <p><strong>Average Intensity:</strong> {{ correlation.avg_intensity }}/10</p>
+                <p><strong>Most Common Emotion:</strong> {{ correlation.top_emotion|title }}</p>
+                <p><strong>Total Logs:</strong> {{ correlation.mood_count }}</p>
+            </div>
+
+            <div class="correlation-insight">
+                <p>
+                    {% if correlation.avg_intensity > 7 %}
+                    ⚠️ This tag is associated with high emotional intensity. Consider adding interventions when logging with this tag.
+                    {% elif correlation.avg_intensity < 4 %}
+                    ✅ This tag is associated with lower emotional intensity. This might be a positive activity for you.
+                    {% else %}
+                    💡 This tag shows moderate emotional intensity.
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <p class="empty-state-text">No correlations yet. Start logging moods with tags to see patterns!</p>
+        <a href="{% url 'log_mood' %}" class="btn btn-primary" style="margin-top: 1rem;">Log a Mood</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
