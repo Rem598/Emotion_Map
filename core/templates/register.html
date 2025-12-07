@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div style="max-width: 28rem; margin: 0 auto;">
+    <div class="card card-large">
+        <h1 style="font-size: 2rem; font-weight: bold; color: #1f2937; margin-bottom: 0.5rem; text-align: center;">Create Account</h1>
+        <p style="text-align: center; color: #6b7280; margin-bottom: 2rem;">Start your emotional wellness journey today</p>
+        
+        <form method="post">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label class="form-label">Username</label>
+                {{ form.username }}
+                {% if form.username.errors %}
+                <p style="color: #ef4444; font-size: 0.875rem; margin-top: 0.25rem;">{{ form.username.errors }}</p>
+                {% endif %}
+                <p class="form-help">{{ form.username.help_text }}</p>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Password</label>
+                {{ form.password1 }}
+                {% if form.password1.errors %}
+                <p style="color: #ef4444; font-size: 0.875rem; margin-top: 0.25rem;">{{ form.password1.errors }}</p>
+                {% endif %}
+                <p class="form-help">{{ form.password1.help_text }}</p>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Confirm Password</label>
+                {{ form.password2 }}
+                {% if form.password2.errors %}
+                <p style="color: #ef4444; font-size: 0.875rem; margin-top: 0.25rem;">{{ form.password2.errors }}</p>
+                {% endif %}
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-full">
+                Create Account
+            </button>
+        </form>
+
+        <div style="text-align: center; margin-top: 1.5rem;">
+            <p style="color: #6b7280;">Already have an account? <a href="{% url 'login' %}" style="color: #9333ea; font-weight: bold;">Log In</a></p>
+        </div>
+    </div>
+</div>
+{% endblock %}

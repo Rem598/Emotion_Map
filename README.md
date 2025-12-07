@@ -56,64 +56,6 @@ This project directly supports **SDG 3: Good Health and Well-being** by:
 | Charts | Chart.js 4.4.0 |
 | Language | Python 3.11+ |
 
----
-
-## 🚀 Quick Start Guide
-
-### Prerequisites
-- Python 3.11 or higher
-- Git
-- pip (Python package manager)
-
-### Installation Steps
-
-1. **Clone the repository**
-```bash
-git clone https://github.com/yourusername/emotion-map.git
-cd emotion-map
-```
-
-2. **Create a virtual environment**
-```bash
-# On Mac/Linux
-python3 -m venv venv
-source venv/bin/activate
-
-# On Windows
-python -m venv venv
-venv\Scripts\activate
-```
-
-3. **Install dependencies**
-```bash
-pip install -r requirements.txt
-```
-
-4. **Create the database**
-```bash
-python manage.py migrate
-```
-
-5. **Seed sample interventions**
-```bash
-python manage.py seed_interventions
-```
-
-6. **Create a superuser (admin account)**
-```bash
-python manage.py createsuperuser
-```
-
-7. **Run the development server**
-```bash
-python manage.py runserver
-```
-
-8. **Access the application**
-- Main app: http://127.0.0.1:8000/
-- Admin panel: http://127.0.0.1:8000/admin/
-
----
 
 ## 📊 Project Structure
 
@@ -174,13 +116,6 @@ Uses Django ORM to aggregate mood intensity by:
 - Day of week (0=Monday, 6=Sunday)
 - Hour of day (0-23)
 
-```python
-avg_intensity = Mood.objects.filter(
-    timestamp__week_day=day_idx,
-    timestamp__hour=hour
-).aggregate(Avg('intensity'))
-```
-
 ---
 
 ## 🎨 Usage Examples
@@ -202,100 +137,7 @@ User provides feedback: **"Helped"**
 - Correlation: #work tag → avg intensity 8.2
 - Top intervention: "Drink Water" (score: 0.85)
 
----
 
-## 🔮 Future Enhancements
-
-- [ ] User authentication and personal data privacy
-- [ ] Machine learning mood prediction
-- [ ] Mobile app (React Native)
-- [ ] Export data to CSV/JSON
-- [ ] Integration with wearables (heart rate, sleep data)
-- [ ] Therapist dashboard for clinical use
-- [ ] Multi-language support
-
----
-
-## 🤝 Contributing
-
-Contributions are welcome! This is an open-source mental health tool.
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit changes (`git commit -m 'Add AmazingFeature'`)
-4. Push to branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
----
-
-## 📝 Database Schema
-
-### Core Models
-
-**Mood**
-- `emotion` (choices: joy, sadness, anxiety, anger, etc.)
-- `intensity` (1-10)
-- `note` (optional text)
-- `tags` (ManyToMany with Tag)
-- `timestamp`
-- `suggested_intervention` (ForeignKey to Intervention)
-
-**Intervention**
-- `title`
-- `description`
-- `submitted_by`
-- `is_active`
-- `created_at`
-
-**Feedback**
-- `mood` (ForeignKey to Mood)
-- `intervention` (ForeignKey to Intervention)
-- `result` (choices: helped, no_change, worse)
-- `created_at`
-
-**Tag**
-- `name` (unique)
-- `created_at`
-
----
-
-## 🐛 Troubleshooting
-
-### Issue: "No module named 'core'"
-**Solution**: Make sure you've created the `core` app:
-```bash
-python manage.py startapp core
-```
-
-### Issue: Static files not loading
-**Solution**: Run `collectstatic` command:
-```bash
-python manage.py collectstatic
-```
-
-### Issue: Database errors
-**Solution**: Reset database:
-```bash
-rm db.sqlite3
-python manage.py migrate
-python manage.py seed_interventions
-```
-
----
-
-## 📄 License
-
-This project is licensed under the MIT License. See `LICENSE` file for details.
-
----
-
-## 👥 Author
-
-**Your Name**  
-Data Analyst | Mental Health Advocate  
-[GitHub](https://github.com/yourusername) | [LinkedIn](https://linkedin.com/in/yourprofile)
-
----
 
 ## 🙏 Acknowledgments
 
@@ -306,12 +148,5 @@ Data Analyst | Mental Health Advocate
 
 ---
 
-## 📧 Contact
-
-For questions, feedback, or collaboration:
-- Email: your.email@example.com
-- GitHub Issues: [Create an issue](https://github.com/yourusername/emotion-map/issues)
-
----
 
 **Built with 💜 to support mental health awareness and SDG 3: Good Health and Well-being**

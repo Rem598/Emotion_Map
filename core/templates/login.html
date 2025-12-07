@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div style="max-width: 28rem; margin: 0 auto;">
+    <div class="card card-large">
+        <h1 style="font-size: 2rem; font-weight: bold; color: #1f2937; margin-bottom: 0.5rem; text-align: center;">Welcome Back</h1>
+        <p style="text-align: center; color: #6b7280; margin-bottom: 2rem;">Log in to continue tracking your emotional well-being</p>
+        
+        <form method="post">
+            {% csrf_token %}
+            
+            {% if form.non_field_errors %}
+            <div style="background: #fee2e2; color: #991b1b; padding: 0.75rem; border-radius: 0.5rem; margin-bottom: 1rem;">
+                {{ form.non_field_errors }}
+            </div>
+            {% endif %}
+            
+            <div class="form-group">
+                <label class="form-label">Username</label>
+                {{ form.username }}
+                {% if form.username.errors %}
+                <p style="color: #ef4444; font-size: 0.875rem; margin-top: 0.25rem;">{{ form.username.errors }}</p>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Password</label>
+                {{ form.password }}
+                {% if form.password.errors %}
+                <p style="color: #ef4444; font-size: 0.875rem; margin-top: 0.25rem;">{{ form.password.errors }}</p>
+                {% endif %}
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-full">
+                Log In
+            </button>
+        </form>
+
+        <div style="text-align: center; margin-top: 1.5rem;">
+            <p style="color: #6b7280;">Don't have an account? <a href="{% url 'register' %}" style="color: #9333ea; font-weight: bold;">Sign Up</a></p>
+        </div>
+    </div>
+</div>
+{% endblock %}

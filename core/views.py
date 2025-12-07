@@ -1,7 +1,7 @@
-from django.shortcuts import render
-
-# Create your views here.
 from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth import login, authenticate, logout
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.db.models import Avg, Count, Q
 from django.utils import timezone
 from datetime import timedelta
@@ -17,38 +17,92 @@ def home(request):
     return render(request, 'home.html')
 
 
+def register_view(request):
+    """User registration"""
+    if request.user.is_authenticated:
+        return redirect('dashboard')
+    
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            return redirect('dashboard')
+    else:
+        form = UserCreationForm()
+    
+    return render(request, 'register.html', {'form': form})
+
+
+def login_view(request):
+    """User login"""
+    if request.user.is_authenticated:
+        return redirect('dashboard')
+    
+    if request.method == 'POST':
+        form = AuthenticationForm(request, data=request.POST)
+        if form.is_valid():
+            username = form.cleaned_data.get('username')
+            password = form.cleaned_data.get('password')
+            user = authenticate(username=username, password=password)
+            if user is not None:
+                login(request, user)
+                return redirect('dashboard')
+    else:
+        form = AuthenticationForm()
+    
+    return render(request, 'login.html', {'form': form})
+
+
+def logout_view(request):
+    """User logout"""
+    logout(request)
+    return redirect('home')
+
+
+
+    
+@login_required
 def dashboard(request):
     """
-    Main dashboard showing:
-    - Recent mood logs
-    - Mood trend chart
-    - Top interventions
+    Main dashboard showing ONLY current user's data
     """
-    # Get recent moods (last 30 days)
     thirty_days_ago = timezone.now() - timedelta(days=30)
-    recent_moods = Mood.objects.filter(timestamp__gte=thirty_days_ago).order_by('-timestamp')[:10]
+    recent_moods = Mood.objects.filter(
+        user=request.user,
+        timestamp__gte=thirty_days_ago
+    ).order_by('-timestamp')[:10]
     
-    # Get mood trend data for chart (last 7 days)
+    # Mood trend for current user only
     seven_days_ago = timezone.now() - timedelta(days=7)
-    mood_trend = Mood.objects.filter(timestamp__gte=seven_days_ago).values('timestamp__date').annotate(
+    mood_trend = Mood.objects.filter(
+        user=request.user,
+        timestamp__gte=seven_days_ago
+    ).values('timestamp__date').annotate(
         avg_intensity=Avg('intensity')
     ).order_by('timestamp__date')
     
-    # Prepare data for Chart.js
-    trend_labels = [str(entry['timestamp__date']) for entry in mood_trend]
-    trend_data = [float(entry['avg_intensity']) for entry in mood_trend]
+    # Convert to lists for JSON
+    trend_labels = []
+    trend_data = []
+    for entry in mood_trend:
+        trend_labels.append(str(entry['timestamp__date']))
+        if entry['avg_intensity']:
+            trend_data.append(float(entry['avg_intensity']))
+        else:
+            trend_data.append(0)
     
-    # Get top-rated interventions
+    # Top interventions (community-wide)
     top_interventions = sorted(
         Intervention.objects.filter(is_active=True),
         key=lambda x: (x.get_success_score(), x.get_total_votes()),
         reverse=True
     )[:5]
     
-    # Get total stats
-    total_logs = Mood.objects.count()
+    # User's stats
+    total_logs = Mood.objects.filter(user=request.user).count()
     total_interventions = Intervention.objects.filter(is_active=True).count()
-    total_feedback = Feedback.objects.count()
+    total_feedback = Feedback.objects.filter(mood__user=request.user).count()
     
     context = {
         'recent_moods': recent_moods,
@@ -63,21 +117,23 @@ def dashboard(request):
     return render(request, 'dashboard.html', context)
 
 
+@login_required
 def log_mood(request):
-    """Mood logging form with intervention suggestion"""
+    """Mood logging form - saves to current user"""
     if request.method == 'POST':
         form = MoodForm(request.POST)
         if form.is_valid():
-            mood = form.save()
+            mood = form.save(commit=False)
+            mood.user = request.user  # Assign to current user
+            mood.save()
+            form.save_m2m()  # Save tags
             
-            # Suggest a random intervention
+            # Suggest intervention
             interventions = list(Intervention.objects.filter(is_active=True))
             if interventions:
                 suggested = random.choice(interventions)
                 mood.suggested_intervention = suggested
                 mood.save()
-                
-                # Redirect to intervention page
                 return redirect('intervention_suggestion', mood_id=mood.id)
             else:
                 return redirect('dashboard')
@@ -87,9 +143,10 @@ def log_mood(request):
     return render(request, 'log_mood.html', {'form': form})
 
 
+@login_required
 def intervention_suggestion(request, mood_id):
-    """Show suggested intervention and collect feedback"""
-    mood = get_object_or_404(Mood, id=mood_id)
+    """Show suggested intervention"""
+    mood = get_object_or_404(Mood, id=mood_id, user=request.user)
     intervention = mood.suggested_intervention
     
     if request.method == 'POST':
@@ -112,14 +169,11 @@ def intervention_suggestion(request, mood_id):
     return render(request, 'intervention_suggestion.html', context)
 
 
+@login_required
 def heatmap_view(request):
-    """
-    Emotional heatmap: Average mood intensity by time of day and day of week
-    """
-    # Get all moods
-    moods = Mood.objects.all()
+    """Heatmap for current user only"""
+    moods = Mood.objects.filter(user=request.user)
     
-    # Create 7x24 matrix (days x hours)
     heatmap_data = []
     days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
     
@@ -127,7 +181,7 @@ def heatmap_view(request):
         day_data = []
         for hour in range(24):
             avg_intensity = moods.filter(
-                timestamp__week_day=day_idx + 2,  # Django week_day: 1=Sunday, 2=Monday
+                timestamp__week_day=day_idx + 2,
                 timestamp__hour=hour
             ).aggregate(Avg('intensity'))['intensity__avg']
             
@@ -146,20 +200,24 @@ def heatmap_view(request):
     return render(request, 'heatmap.html', context)
 
 
+@login_required
 def correlations_view(request):
-    """
-    Show correlations between tags and emotions/intensities
-    """
-    # Get all tags with mood counts
-    tags = Tag.objects.annotate(mood_count=Count('mood')).filter(mood_count__gt=0)
+    """Correlations for current user only"""
+    tags = Tag.objects.filter(
+        mood__user=request.user
+    ).annotate(mood_count=Count('mood')).filter(mood_count__gt=0).distinct()
     
     correlations = []
     for tag in tags:
-        # Get average intensity for this tag
-        avg_intensity = Mood.objects.filter(tags=tag).aggregate(Avg('intensity'))['intensity__avg']
+        avg_intensity = Mood.objects.filter(
+            user=request.user,
+            tags=tag
+        ).aggregate(Avg('intensity'))['intensity__avg']
         
-        # Get most common emotion with this tag
-        emotion_counts = Mood.objects.filter(tags=tag).values('emotion').annotate(
+        emotion_counts = Mood.objects.filter(
+            user=request.user,
+            tags=tag
+        ).values('emotion').annotate(
             count=Count('emotion')
         ).order_by('-count').first()
         
@@ -168,10 +226,9 @@ def correlations_view(request):
                 'tag': tag.name,
                 'avg_intensity': round(avg_intensity, 1) if avg_intensity else 0,
                 'top_emotion': emotion_counts['emotion'],
-                'mood_count': tag.mood_count,
+                'mood_count': Mood.objects.filter(user=request.user, tags=tag).count(),
             })
     
-    # Sort by average intensity descending
     correlations.sort(key=lambda x: x['avg_intensity'], reverse=True)
     
     context = {
@@ -182,10 +239,9 @@ def correlations_view(request):
 
 
 def interventions_list(request):
-    """List all interventions with success scores"""
+    """List all interventions - public view"""
     interventions = Intervention.objects.filter(is_active=True)
     
-    # Add scores to each intervention
     interventions_with_scores = [
         {
             'intervention': i,
@@ -195,7 +251,6 @@ def interventions_list(request):
         for i in interventions
     ]
     
-    # Sort by score then votes
     interventions_with_scores.sort(key=lambda x: (x['score'], x['votes']), reverse=True)
     
     context = {
@@ -205,8 +260,9 @@ def interventions_list(request):
     return render(request, 'interventions_list.html', context)
 
 
+@login_required
 def submit_intervention(request):
-    """Form for community to submit new interventions"""
+    """Submit new intervention - requires login"""
     if request.method == 'POST':
         form = InterventionForm(request.POST)
         if form.is_valid():

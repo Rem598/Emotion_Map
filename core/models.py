@@ -1,7 +1,5 @@
 from django.db import models
-
-# Create your models here.
-from django.db import models
+from django.contrib.auth.models import User
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.utils import timezone
 
@@ -45,7 +43,6 @@ class Intervention(models.Model):
         if total == 0:
             return 0.0
         
-        # Score calculation: helped gets +1, worse gets -1, no_change is neutral
         score = (helped - worse) / total
         return round(score, 2)
     
@@ -58,7 +55,7 @@ class Intervention(models.Model):
 
 
 class Mood(models.Model):
-    """Individual mood log entries"""
+    """Individual mood log entries - NOW WITH USER"""
     EMOTION_CHOICES = [
         ('joy', 'Joy'),
         ('sadness', 'Sadness'),
@@ -72,6 +69,7 @@ class Mood(models.Model):
         ('calm', 'Calm'),
     ]
     
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)  # NEW: Link to user
     emotion = models.CharField(max_length=20, choices=EMOTION_CHOICES)
     intensity = models.IntegerField(
         validators=[MinValueValidator(1), MaxValueValidator(10)],
@@ -82,7 +80,6 @@ class Mood(models.Model):
     timestamp = models.DateTimeField(default=timezone.now)
     created_at = models.DateTimeField(auto_now_add=True)
     
-    # Optional: Link to an intervention that was suggested
     suggested_intervention = models.ForeignKey(
         Intervention, 
         on_delete=models.SET_NULL, 

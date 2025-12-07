@@ -2,8 +2,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Emotion Map{% endblock %}</title>
     
     <!-- External Libraries -->
@@ -19,11 +19,18 @@
         <div class="nav-container">
             <a href="{% url 'home' %}" class="nav-logo">💜 Emotion Map</a>
             <div class="nav-links">
-                <a href="{% url 'dashboard' %}" class="nav-link">Dashboard</a>
-                <a href="{% url 'log_mood' %}" class="nav-link-primary">Log Mood</a>
-                <a href="{% url 'heatmap' %}" class="nav-link">Heatmap</a>
-                <a href="{% url 'correlations' %}" class="nav-link">Insights</a>
-                <a href="{% url 'interventions_list' %}" class="nav-link">Interventions</a>
+                {% if user.is_authenticated %}
+                    <a href="{% url 'dashboard' %}" class="nav-link">Dashboard</a>
+                    <a href="{% url 'log_mood' %}" class="nav-link-primary">Log Mood</a>
+                    <a href="{% url 'heatmap' %}" class="nav-link">Heatmap</a>
+                    <a href="{% url 'correlations' %}" class="nav-link">Insights</a>
+                    <a href="{% url 'interventions_list' %}" class="nav-link">Interventions</a>
+                    <a href="{% url 'logout' %}" class="nav-link" style="color: #ef4444;">Logout ({{ user.username }})</a>
+                {% else %}
+                    <a href="{% url 'interventions_list' %}" class="nav-link">Interventions</a>
+                    <a href="{% url 'login' %}" class="nav-link">Login</a>
+                    <a href="{% url 'register' %}" class="nav-link-primary">Sign Up</a>
+                {% endif %}
             </div>
         </div>
     </nav>
