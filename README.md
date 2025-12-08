@@ -10,33 +10,63 @@ A Django web application that helps users gain emotional self-awareness through 
 
 ---
 
+
+## 📸 Images
+
+### Dashboard
+![Dashboard](screenshots/dashboard.png)
+*Real-time mood trends and statistics*
+
+### Mood Logging
+![Log Mood](screenshots/log-mood.png)
+*Quick and intuitive mood entry form*
+
+### Emotional Heatmap
+![Heatmap](screenshots/heatmap.png)
+*Visualize mood patterns by time and day*
+
+### Pattern Insights
+![Insights](screenshots/insights.png)
+*Discover correlations between activities and emotions*
+
+### Intervention Library
+![Interventions](screenshots/interventions.png)
+*Community-rated micro-interventions*
+
+---
+
 ## 🌟 Key Features
 
-### 1. **Fast Mood Logging**
+### 1. **User Authentication**
+- Secure registration and login system
+- Personal mood tracking for each user
+- Privacy-focused data storage
+
+### 2. **Fast Mood Logging**
 - Log emotional states with intensity ratings (1-10)
 - Add contextual tags (#Work, #Home, #Exercise)
 - Optional notes for deeper reflection
 
-### 2. **Community-Powered Intervention Library**
+### 3. **Community-Powered Intervention Library**
 - Micro-interventions (e.g., "Take 3 deep breaths")
 - Community success scoring based on user feedback
 - Vote on effectiveness: Helped / No Change / Made it Worse
 
-### 3. **Data-Driven Insights**
+### 4. **Data-Driven Insights**
 - **Emotional Heatmap**: Visualize mood intensity by time of day and day of week
 - **Correlation Engine**: Discover patterns like "Anxiety peaks on Mondays with #WorkDeadline"
 - **Trend Charts**: 7-day mood intensity tracking with Chart.js
 
-### 4. **Interactive UI**
-- Built with HTMX for seamless interactivity
-- Tailwind CSS for modern, responsive design
-- Real-time feedback without page reloads
+### 5. **Interactive UI**
+- Clean, modern design with custom CSS
+- HTMX for seamless page updates
+- Chart.js for interactive data visualizations
 
 ---
 
 ## 🎯 SDG 3 Alignment
 
-This project directly supports **SDG 3: Good Health and Well-being** by:
+This project directly supports **UN SDG 3: Good Health and Well-being** by:
 
 - ✅ Promoting mental health awareness through self-tracking
 - ✅ Providing accessible, evidence-based interventions
@@ -50,12 +80,14 @@ This project directly supports **SDG 3: Good Health and Well-being** by:
 | Component | Technology |
 |-----------|------------|
 | Backend | Django 5.0.7 |
-| Database | SQLite (dev) / PostgreSQL (production) |
-| Frontend | HTMX 1.9.10 |
-| Styling | Tailwind CSS |
-| Charts | Chart.js 4.4.0 |
-| Language | Python 3.11+ |
+| Database | SQLite (development) |
+| Frontend | HTML5, CSS3, JavaScript |
+| Interactivity | HTMX 1.9.10 |
+| Visualizations | Chart.js 4.4.0 |
+| Language | Python 3.13.7 |
+| Authentication | Django Auth System |
 
+---
 
 ## 📊 Project Structure
 
@@ -71,6 +103,8 @@ emotion-map/
 │   │   ├── base.html             # Base template with navigation
 │   │   ├── home.html             # Landing page
 │   │   ├── dashboard.html        # Main dashboard with charts
+│   │   ├── login.html            # User login
+│   │   ├── register.html         # User registration
 │   │   ├── log_mood.html         # Mood logging form
 │   │   ├── intervention_suggestion.html
 │   │   ├── heatmap.html          # Emotional heatmap
@@ -84,9 +118,15 @@ emotion-map/
 │   ├── settings.py               # Project configuration
 │   ├── urls.py                   # Main URL routing
 │   └── wsgi.py                   # WSGI configuration
-├── static/                        # Static files (future CSS/JS)
+├── static/                        # Static files
+│   ├── css/
+│   │   └── main.css              # Custom styles
+│   └── js/
+│       ├── dashboard.js          # Dashboard chart logic
+│       └── heatmap.js            # Heatmap visualization
 ├── requirements.txt              # Python dependencies
 ├── manage.py                     # Django management script
+├── LICENSE                       # MIT License
 └── README.md                     # This file
 ```
 
@@ -108,7 +148,7 @@ score = (helped_votes - worse_votes) / total_votes
 - 10 "Helped" votes
 - 2 "No Change" votes
 - 1 "Made it Worse" vote
-- Score = (10 - 1) / 13 = **0.69**
+- **Score = (10 - 1) / 13 = 0.69**
 
 ### Heatmap Aggregation
 
@@ -116,11 +156,26 @@ Uses Django ORM to aggregate mood intensity by:
 - Day of week (0=Monday, 6=Sunday)
 - Hour of day (0-23)
 
+```python
+avg_intensity = Mood.objects.filter(
+    user=request.user,
+    timestamp__week_day=day_idx,
+    timestamp__hour=hour
+).aggregate(Avg('intensity'))
+```
+
 ---
 
 ## 🎨 Usage Examples
 
-### 1. Log a Mood
+### 1. User Registration & Login
+```
+1. Create account with username and password
+2. Log in to access personal dashboard
+3. All mood data is private to each user
+```
+
+### 2. Log a Mood
 ```
 Emotion: Anxiety
 Intensity: 7/10
@@ -128,16 +183,43 @@ Tags: work, deadline
 Note: "Big presentation tomorrow"
 ```
 
-### 2. Get Intervention
-System suggests: **"Take 3 Deep Breaths"**
-User provides feedback: **"Helped"**
+### 3. Get Intervention
+```
+System suggests: "Take 3 Deep Breaths"
+User tries intervention
+Provides feedback: "Helped"
+→ Updates community success score
+```
 
-### 3. View Insights
-- Heatmap shows: Anxiety peaks Monday mornings
-- Correlation: #work tag → avg intensity 8.2
-- Top intervention: "Drink Water" (score: 0.85)
+### 4. View Insights
+```
+- Heatmap shows: Anxiety peaks Monday mornings (9-11 AM)
+- Correlation: #work tag → average intensity 8.2
+- Top intervention: "Drink Water" (community score: 0.85)
+```
 
+---
 
+## 🔒 Privacy & Security
+
+- **User authentication** required for mood logging
+- **Personal data isolation** - users only see their own moods
+- **Secure password storage** using Django's built-in hashing
+- **No email required** - anonymous registration supported
+- **Community data only** - intervention ratings are aggregated
+
+---
+
+## 💡 Future Enhancements
+
+- Mobile app (React Native)
+- Machine learning mood prediction
+- Export data to CSV/PDF
+- Therapist dashboard for clinical use
+- Integration with wearables
+- Multi-language support
+
+---
 
 ## 🙏 Acknowledgments
 
@@ -148,5 +230,38 @@ User provides feedback: **"Helped"**
 
 ---
 
+## 📄 License
+
+MIT License
+
+Copyright (c) 2025 [Your Name]
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+---
+
+## 👤 Author
+
+**Rehema Kemunto**  
+  
+[GitHub](https://github.com/Rem598) | [LinkedIn](https://linkedin.com/in/rehema-kemunto)
+
+---
 
 **Built with 💜 to support mental health awareness and SDG 3: Good Health and Well-being**
