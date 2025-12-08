@@ -14,23 +14,23 @@ A Django web application that helps users gain emotional self-awareness through 
 ## 📸 Images
 
 ### Dashboard
-![Dashboard](Emotion_Map/static/Images/dashboard.png)
+![Dashboard](Images/dashboard.png)
 *Real-time mood trends and statistics*
 
 ### Mood Logging
-![Log Mood](Emotion_Map/static/Images/logmood.png)
+![Log Mood](Images/logmood.png)
 *Quick and intuitive mood entry form*
 
 ### Emotional Heatmap
-![Heatmap](emotion_map/static/Images/heatmap.png)
+![Heatmap](Images/heatmap.png)
 *Visualize mood patterns by time and day*
 
 ### Pattern Insights
-![Insights](emotion_map/static/Images/insights.png)
+![Insights](Images/insights.png)
 *Discover correlations between activities and emotions*
 
 ### Intervention Library
-![Interventions](emotion_map/static/Images/interventions.png)
+![Interventions](Images/interventions.png)
 *Community-rated micro-interventions*
 
 ---
