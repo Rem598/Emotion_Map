@@ -81,7 +81,7 @@ This project directly supports **UN SDG 3: Good Health and Well-being** by:
 |-----------|------------|
 | Backend | Django |
 | Database | SQLite (development) |
-| Frontend | HTML5, CSS3, JavaScript |
+| Frontend | HTML, CSS, JavaScript |
 | Interactivity | HTMX  |
 | Visualizations | Chart.js  |
 | Language | Python  |
