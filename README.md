@@ -79,12 +79,12 @@ This project directly supports **UN SDG 3: Good Health and Well-being** by:
 
 | Component | Technology |
 |-----------|------------|
-| Backend | Django 5.0.7 |
+| Backend | Django |
 | Database | SQLite (development) |
 | Frontend | HTML5, CSS3, JavaScript |
-| Interactivity | HTMX 1.9.10 |
-| Visualizations | Chart.js 4.4.0 |
-| Language | Python 3.13.7 |
+| Interactivity | HTMX  |
+| Visualizations | Chart.js  |
+| Language | Python  |
 | Authentication | Django Auth System |
 
 ---
