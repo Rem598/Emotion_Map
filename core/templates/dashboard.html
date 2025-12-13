@@ -2,11 +2,15 @@
 
 {% block content %}
 <div>
-    <h1 class="page-title">Your Dashboard</h1>
-    
-    
-    <p>Total Logs: {{ total_logs }}</p>
-    <p>Recent Moods Count: {{ recent_moods|length }}</p>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+        <h1 class="page-title" style="margin-bottom: 0;">Your Dashboard</h1>
+        <div style="display: flex; gap: 0.5rem;">
+            <a href="{% url 'weekly_report' %}" class="btn btn-secondary" style="font-size: 0.875rem; padding: 0.5rem 1rem;">📊 Weekly Report</a>
+            <a href="{% url 'comparison' %}" class="btn btn-secondary" style="font-size: 0.875rem; padding: 0.5rem 1rem;">📈 Compare</a>
+            <a href="{% url 'insights_dashboard' %}" class="btn btn-secondary" style="font-size: 0.875rem; padding: 0.5rem 1rem;">💡 Insights</a>
+            <a href="{% url 'export_moods' %}" class="btn btn-success" style="font-size: 0.875rem; padding: 0.5rem 1rem;">⬇️ Export CSV</a>
+        </div>
+    </div>
 
     <!-- Stats Cards -->
     <div class="stats-grid">
@@ -28,27 +32,71 @@
     <div class="card card-large">
         <h2 style="font-size: 1.5rem; font-weight: bold; margin-bottom: 1rem;">7-Day Mood Trend</h2>
         <canvas id="moodTrendChart" height="80"></canvas>
-    
+        
+        {% if not recent_moods %}
+        <p style="color: #9ca3af; font-style: italic; text-align: center; margin-top: 2rem;">
+            No mood data yet. <a href="{% url 'log_mood' %}" style="color: #9333ea;">Log your first mood!</a>
+        </p>
+        {% endif %}
     </div>
 
-    <!-- Recent Moods -->
-    <div class="card" style="margin-top: 2rem;">
-        <h2 style="font-size: 1.5rem; font-weight: bold; margin-bottom: 1rem;">Recent Mood Logs</h2>
-        {% if recent_moods %}
-            {% for mood in recent_moods %}
-            <div class="mood-item">
-                <div class="mood-header">
-                    <div>
-                        <span class="mood-emotion">{{ mood.get_emotion_display }}</span>
-                        <span class="mood-intensity">Intensity: {{ mood.intensity }}/10</span>
+    <!-- Two Column Layout -->
+    <div class="two-column-grid" style="margin-top: 2rem;">
+        <!-- Recent Moods -->
+        <div class="card">
+            <h2 style="font-size: 1.5rem; font-weight: bold; margin-bottom: 1rem;">Recent Mood Logs</h2>
+            {% if recent_moods %}
+                <div>
+                    {% for mood in recent_moods %}
+                    <div class="mood-item">
+                        <div class="mood-header">
+                            <div>
+                                <span class="mood-emotion">{{ mood.get_emotion_display }}</span>
+                                <span class="mood-intensity">Intensity: {{ mood.intensity }}/10</span>
+                            </div>
+                            <div style="display: flex; gap: 0.5rem; align-items: center;">
+                                <span class="mood-timestamp">{{ mood.timestamp|date:"M d, H:i" }}</span>
+                                <a href="{% url 'edit_mood' mood.id %}" style="color: #3b82f6; font-size: 0.875rem; text-decoration: none;">✏️ Edit</a>
+                                <a href="{% url 'delete_mood' mood.id %}" onclick="return confirm('Delete this mood?')" style="color: #ef4444; font-size: 0.875rem; text-decoration: none;">🗑️ Delete</a>
+                            </div>
+                        </div>
+                        {% if mood.tags.all %}
+                        <div class="mood-tags">
+                            {% for tag in mood.tags.all %}
+                            <span class="tag">{{ tag.name }}</span>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
                     </div>
-                    <span class="mood-timestamp">{{ mood.timestamp|date:"M d, H:i" }}</span>
+                    {% endfor %}
                 </div>
-            </div>
-            {% endfor %}
-        {% else %}
-            <p style="color: #9ca3af; font-style: italic;">No mood logs yet.</p>
-        {% endif %}
+            {% else %}
+                <p style="color: #9ca3af; font-style: italic;">No mood logs yet. <a href="{% url 'log_mood' %}" style="color: #9333ea;">Start logging!</a></p>
+            {% endif %}
+        </div>
+
+        <!-- Top Interventions -->
+        <div class="card">
+            <h2 style="font-size: 1.5rem; font-weight: bold; margin-bottom: 1rem;">Top-Rated Interventions</h2>
+            {% if top_interventions %}
+                <div>
+                    {% for intervention in top_interventions %}
+                    <div class="intervention-card">
+                        <div class="intervention-header">
+                            <h3 class="intervention-title">{{ intervention.title }}</h3>
+                            <span class="intervention-score {% if intervention.get_success_score > 0.5 %}score-positive{% elif intervention.get_success_score < 0 %}score-negative{% else %}score-neutral{% endif %}">
+                                {{ intervention.get_success_score|floatformat:2 }}
+                            </span>
+                        </div>
+                        <p class="intervention-description">{{ intervention.description|truncatewords:20 }}</p>
+                        <div class="intervention-votes">{{ intervention.get_total_votes }} votes</div>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p style="color: #9ca3af; font-style: italic;">No interventions yet.</p>
+            {% endif %}
+        </div>
     </div>
 </div>
 
@@ -59,17 +107,8 @@
     "data": {{ trend_data|safe }}
 }
 </script>
-
-<script>
-console.log('Dashboard template loaded!');
-console.log('Chart data element:', document.getElementById('chart-data'));
-console.log('Canvas element:', document.getElementById('moodTrendChart'));
-</script>
 {% endblock %}
 
 {% block extra_js %}
 <script src="/static/js/dashboard.js"></script>
-<script>
-console.log('Dashboard JS should have loaded');
-</script>
 {% endblock %}

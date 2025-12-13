@@ -1,81 +1,50 @@
-{% extends "base.html" %}
-
-{% block title %}Insights Dashboard{% endblock %}
+{% extends 'base.html' %}
 
 {% block content %}
-<div class="container mt-5">
-    <div class="row mb-4">
-        <div class="col-md-12">
-            <h1>Insights Dashboard</h1>
-            <p class="text-muted">Track and analyze your emotional patterns</p>
-        </div>
-    </div>
+<div>
+    <h1 class="page-title">💡 AI-Powered Insights</h1>
+    <p class="page-subtitle">Discover patterns in your emotional data</p>
 
-    <div class="row mb-4">
-        <div class="col-md-3">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">Total Entries</h5>
-                    <p class="card-text display-4">{{ total_entries }}</p>
+    {% if insights %}
+        <div class="correlation-grid">
+            {% for insight in insights %}
+            <div class="correlation-card">
+                <div style="display: flex; align-items: start; gap: 1rem;">
+                    <div style="font-size: 3rem;">{{ insight.icon }}</div>
+                    <div style="flex: 1;">
+                        <p style="font-size: 1.125rem; color: #374151; line-height: 1.6;">
+                            {{ insight.text }}
+                        </p>
+                    </div>
                 </div>
             </div>
+            {% endfor %}
         </div>
-        <div class="col-md-3">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">Dominant Emotion</h5>
-                    <p class="card-text">{{ dominant_emotion }}</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">This Week</h5>
-                    <p class="card-text">{{ weekly_entries }}</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">Avg. Mood</h5>
-                    <p class="card-text">{{ average_mood }}</p>
-                </div>
-            </div>
-        </div>
-    </div>
 
-    <div class="row">
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-header">
-                    <h5>Emotion Distribution</h5>
-                </div>
-                <div class="card-body">
-                    <canvas id="emotionChart"></canvas>
-                </div>
-            </div>
+        <div class="card card-large" style="margin-top: 2rem;">
+            <h2 style="font-size: 1.5rem; font-weight: bold; margin-bottom: 1rem;">📚 How to Use These Insights</h2>
+            <ul style="list-style-position: inside; color: #374151; line-height: 2;">
+                <li><strong>Day patterns:</strong> Plan self-care activities on your harder days</li>
+                <li><strong>Time patterns:</strong> Schedule important tasks during your better hours</li>
+                <li><strong>Tag correlations:</strong> Identify triggers and positive activities</li>
+                <li><strong>Track changes:</strong> Come back weekly to see how patterns evolve</li>
+            </ul>
         </div>
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-header">
-                    <h5>Mood Trend</h5>
-                </div>
-                <div class="card-body">
-                    <canvas id="trendChart"></canvas>
-                </div>
-            </div>
+    {% else %}
+        <div class="empty-state">
+            <p style="font-size: 3rem; margin-bottom: 1rem;">📊</p>
+            <p class="empty-state-text">Not enough data to generate insights yet</p>
+            <p style="color: #6b7280; margin-top: 1rem;">
+                Keep logging moods for at least a week to see personalized patterns!
+            </p>
+            <a href="{% url 'log_mood' %}" class="btn btn-primary" style="margin-top: 1.5rem;">
+                Log a Mood
+            </a>
         </div>
+    {% endif %}
+
+    <div style="text-align: center; margin-top: 2rem;">
+        <a href="{% url 'dashboard' %}" class="btn btn-secondary">Back to Dashboard</a>
     </div>
 </div>
-
-{% block scripts %}
-
-{% block extra_js %}
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-{% endblock %}
-
-
-
 {% endblock %}

@@ -1,0 +1,134 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="comparison-page">
+    <h1 class="page-title">📊 Week Comparison</h1>
+    <p class="page-subtitle">How does this week compare to last week?</p>
+
+    <div class="card card-large intensity-card">
+        <h2 class="section-title">Average Intensity</h2>
+        <div class="intensity-grid">
+            <div class="this-week">
+                <p class="label">This Week</p>
+                <p class="value">
+                    {{ comparison.this_week_avg|floatformat:1 }}
+                </p>
+                <p class="unit">out of 10</p>
+            </div>
+
+            <div class="change">
+                {% if comparison.intensity_change %}
+                    {% if comparison.intensity_change > 0 %}
+                        <div>
+                            <p class="arrow">↑</p>
+                            <p class="change-value">
+                                +{{ comparison.intensity_change|floatformat:1 }}%
+                            </p>
+                            <p class="change-label">Higher intensity</p>
+                        </div>
+                    {% elif comparison.intensity_change < 0 %}
+                        <div>
+                            <p class="arrow">↓</p>
+                            <p class="change-value">
+                                {{ comparison.intensity_change|floatformat:1 }}%
+                            </p>
+                            <p class="change-label">Lower intensity</p>
+                        </div>
+                    {% else %}
+                        <div>
+                            <p class="arrow">→</p>
+                            <p class="change-value">Same</p>
+                            <p class="change-label">No change</p>
+                        </div>
+                    {% endif %}
+                {% else %}
+                    <p class="no-data">Not enough data</p>
+                {% endif %}
+            </div>
+
+            <div class="last-week">
+                <p class="label">Last Week</p>
+                <p class="value">
+                    {{ comparison.last_week_avg|floatformat:1 }}
+                </p>
+                <p class="unit">out of 10</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="card card-large logs-card">
+        <h2 class="section-title">Mood Logs Count</h2>
+        <div class="logs-grid">
+            <div class="this-week-logs">
+                <p class="label">This Week</p>
+                <p class="value">
+                    {{ comparison.this_week_count }}
+                </p>
+                <p class="unit">logs</p>
+            </div>
+
+            <div class="last-week-logs">
+                <p class="label">Last Week</p>
+                <p class="value">
+                    {{ comparison.last_week_count }}
+                </p>
+                <p class="unit">logs</p>
+            </div>
+
+            <div class="difference">
+                <p class="label">Difference</p>
+                <p class="value 
+                    {% if comparison.this_week_count > comparison.last_week_count %}
+                        positive
+                    {% elif comparison.this_week_count < comparison.last_week_count %}
+                        negative
+                    {% else %}
+                        neutral
+                    {% endif %}">
+                    {% with diff=comparison.this_week_count|add:"-"|add:comparison.last_week_count %}
+                        {% if comparison.this_week_count > comparison.last_week_count %}
+                            +{{ diff }}
+                        {% elif comparison.this_week_count < comparison.last_week_count %}
+                            {{ diff }}
+                        {% else %}
+                            0
+                        {% endif %}
+                    {% endwith %}
+                </p>
+                <p class="unit">change</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="card card-large summary-card">
+        <h2 class="section-title">💡 Summary</h2>
+        {% if comparison.this_week_count > 0 or comparison.last_week_count > 0 %}
+            <ul class="summary-list">
+                {% if comparison.intensity_change %}
+                    {% if comparison.intensity_change < -10 %}
+                        <li>Great news! Your emotional intensity decreased by {{ comparison.intensity_change|floatformat:0|slice:"1:" }}% this week 🎉</li>
+                    {% elif comparison.intensity_change > 10 %}
+                        <li>Your emotional intensity increased by {{ comparison.intensity_change|floatformat:0 }}% this week. Consider self-care strategies 💜</li>
+                    {% else %}
+                        <li>Your emotional intensity remained relatively stable this week</li>
+                    {% endif %}
+                {% endif %}
+                
+                {% if comparison.this_week_count > comparison.last_week_count %}
+                    {% with diff=comparison.this_week_count|add:"-"|add:comparison.last_week_count %}
+                        <li>You logged {{ diff }} more mood{{ diff|pluralize }} this week - great consistency! 👍</li>
+                    {% endwith %}
+                {% elif comparison.this_week_count < comparison.last_week_count %}
+                    <li>You logged fewer moods this week. Try to maintain consistent tracking for better insights</li>
+                {% endif %}
+            </ul>
+        {% else %}
+            <p class="no-data">No data to compare yet. Keep logging moods!</p>
+        {% endif %}
+    </div>
+
+    <div class="back-button">
+        <a href="{% url 'dashboard' %}" class="btn btn-primary">Back to Dashboard</a>
+    </div>
+</div>
+{% endblock %}

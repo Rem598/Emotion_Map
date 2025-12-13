@@ -16,10 +16,20 @@ urlpatterns = [
     path('heatmap/', views.heatmap_view, name='heatmap'),
     path('correlations/', views.correlations_view, name='correlations'),
     
+    # CRUD operations
+    path('mood/edit/<int:mood_id>/', views.edit_mood, name='edit_mood'),
+    path('mood/delete/<int:mood_id>/', views.delete_mood, name='delete_mood'),
+    
+    # New features
+    path('export/', views.export_moods_csv, name='export_moods'),
+    path('weekly-report/', views.weekly_report, name='weekly_report'),
+    path('comparison/', views.comparison_view, name='comparison'),
+    path('insights/', views.insights_dashboard, name='insights_dashboard'),
+    
+    # API
+    path('api/moods/', views.api_moods, name='api_moods'),
+    
     # Public intervention pages
     path('interventions/', views.interventions_list, name='interventions_list'),
     path('interventions/submit/', views.submit_intervention, name='submit_intervention'),
-    path('weekly_report/', views.weekly_report, name='weekly_report'),
-    path('insights_dashboard/', views.insights_dashboard, name='insights_dashboard'),
-    path('comparison/', views.comparison_view, name='comparison'),
 ]
