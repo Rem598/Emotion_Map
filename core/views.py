@@ -7,6 +7,9 @@ from django.utils import timezone
 from datetime import timedelta
 import random
 import json
+import csv
+from django.http import HttpResponse
+from django.http import JsonResponse
 
 from .models import Mood, Intervention, Feedback, Tag
 from .forms import MoodForm, FeedbackForm, InterventionForm
@@ -67,6 +70,26 @@ def dashboard(request):
     """
     Main dashboard showing ONLY current user's data
     """
+    moods = Mood.objects.filter(user=request.user)
+    
+    # Filter by emotion
+    emotion_filter = request.GET.get('emotion')
+    if emotion_filter:
+        moods = moods.filter(emotion=emotion_filter)
+    
+    # Filter by date range
+    start_date = request.GET.get('start_date')
+    end_date = request.GET.get('end_date')
+    if start_date:
+        moods = moods.filter(timestamp__gte=start_date)
+    if end_date:
+        moods = moods.filter(timestamp__lte=end_date)
+    
+    # Filter by tag
+    tag_filter = request.GET.get('tag')
+    if tag_filter:
+        moods = moods.filter(tags__name=tag_filter)
+
     thirty_days_ago = timezone.now() - timedelta(days=30)
     recent_moods = Mood.objects.filter(
         user=request.user,
@@ -114,9 +137,12 @@ def dashboard(request):
         'total_feedback': total_feedback,
     }
     
+    
+    
+    
     return render(request, 'dashboard.html', context)
 
-
+    
 @login_required
 def log_mood(request):
     """Mood logging form - saves to current user"""
@@ -272,3 +298,183 @@ def submit_intervention(request):
         form = InterventionForm()
     
     return render(request, 'submit_intervention.html', {'form': form})
+
+# views.py
+@login_required
+def delete_mood(request, mood_id):
+    mood = get_object_or_404(Mood, id=mood_id, user=request.user)
+    mood.delete()
+    return redirect('dashboard')
+
+@login_required
+def edit_mood(request, mood_id):
+    mood = get_object_or_404(Mood, id=mood_id, user=request.user)
+    if request.method == 'POST':
+        form = MoodForm(request.POST, instance=mood)
+        if form.is_valid():
+            form.save()
+            return redirect('dashboard')
+    else:
+        form = MoodForm(instance=mood)
+    return render(request, 'edit_mood.html', {'form': form, 'mood': mood})
+
+
+    
+
+@login_required
+def export_moods_csv(request):
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="my_moods.csv"'
+    
+    writer = csv.writer(response)
+    writer.writerow(['Date', 'Time', 'Emotion', 'Intensity', 'Tags', 'Note'])
+    
+    moods = Mood.objects.filter(user=request.user).order_by('-timestamp')
+    for mood in moods:
+        tags = ', '.join([tag.name for tag in mood.tags.all()])
+        writer.writerow([
+            mood.timestamp.date(),
+            mood.timestamp.time().strftime('%H:%M'),
+            mood.get_emotion_display(),
+            mood.intensity,
+            tags,
+            mood.note or ''
+        ])
+    
+    return response
+
+@login_required
+def weekly_report(request):
+    week_ago = timezone.now() - timedelta(days=7)
+    moods = Mood.objects.filter(user=request.user, timestamp__gte=week_ago)
+    
+    report = {
+        'total_logs': moods.count(),
+        'avg_intensity': moods.aggregate(Avg('intensity'))['intensity__avg'],
+        'most_common_emotion': moods.values('emotion').annotate(
+            count=Count('emotion')
+        ).order_by('-count').first(),
+        'peak_day': moods.values('timestamp__week_day').annotate(
+            avg_intensity=Avg('intensity')
+        ).order_by('-avg_intensity').first(),
+        'best_day': moods.order_by('intensity').first(),
+        'worst_day': moods.order_by('-intensity').first(),
+    }
+    
+    return render(request, 'weekly_report.html', {'report': report})
+
+@login_required
+def get_streak(user):
+    moods = Mood.objects.filter(user=user).order_by('-timestamp')
+    if not moods:
+        return 0
+    
+    streak = 1
+    current_date = moods[0].timestamp.date()
+    
+    for mood in moods[1:]:
+        mood_date = mood.timestamp.date()
+        if (current_date - mood_date).days == 1:
+            streak += 1
+            current_date = mood_date
+        elif (current_date - mood_date).days > 1:
+            break
+    
+    return streak
+
+
+@login_required
+def comparison_view(request):
+    now = timezone.now()
+    week_ago = now - timedelta(days=7)
+    two_weeks_ago = now - timedelta(days=14)
+    
+    this_week = Mood.objects.filter(user=request.user, timestamp__gte=week_ago)
+    last_week = Mood.objects.filter(
+        user=request.user, 
+        timestamp__gte=two_weeks_ago,
+        timestamp__lt=week_ago
+    )
+    
+    comparison = {
+        'this_week_avg': this_week.aggregate(Avg('intensity'))['intensity__avg'] or 0,
+        'last_week_avg': last_week.aggregate(Avg('intensity'))['intensity__avg'] or 0,
+        'this_week_count': this_week.count(),
+        'last_week_count': last_week.count(),
+    }
+    
+    # Calculate percentage change
+    if comparison['last_week_avg'] > 0:
+        comparison['intensity_change'] = (
+            (comparison['this_week_avg'] - comparison['last_week_avg']) 
+            / comparison['last_week_avg'] * 100
+        )
+    
+    return render(request, 'comparison.html', {'comparison': comparison})
+
+@login_required
+def insights_dashboard(request):
+    moods = Mood.objects.filter(user=request.user)
+    
+    insights = []
+    
+    # Insight 1: Day of week pattern
+    day_stats = {}
+    for day in range(7):
+        day_moods = moods.filter(timestamp__week_day=day+2)
+        if day_moods.exists():
+            day_stats[day] = day_moods.aggregate(Avg('intensity'))['intensity__avg']
+    
+    if day_stats:
+        worst_day = max(day_stats, key=day_stats.get)
+        best_day = min(day_stats, key=day_stats.get)
+        days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+        insights.append({
+            'icon': '📅',
+            'text': f"Your mood is typically better on {days[best_day]}s and harder on {days[worst_day]}s"
+        })
+    
+    # Insight 2: Time of day
+    morning = moods.filter(timestamp__hour__range=(6, 12)).aggregate(Avg('intensity'))
+    evening = moods.filter(timestamp__hour__range=(18, 23)).aggregate(Avg('intensity'))
+    
+    if morning['intensity__avg'] and evening['intensity__avg']:
+        if evening['intensity__avg'] < morning['intensity__avg']:
+            insights.append({
+                'icon': '🌙',
+                'text': f"You're {((morning['intensity__avg'] - evening['intensity__avg']) / morning['intensity__avg'] * 100):.0f}% calmer in the evenings"
+            })
+    
+    # Insight 3: Tag correlations
+    tags = Tag.objects.filter(mood__user=request.user).distinct()
+    tag_insights = []
+    
+    for tag in tags:
+        with_tag = moods.filter(tags=tag).aggregate(Avg('intensity'))['intensity__avg']
+        without_tag = moods.exclude(tags=tag).aggregate(Avg('intensity'))['intensity__avg']
+        
+        if with_tag and without_tag:
+            diff = ((with_tag - without_tag) / without_tag * 100)
+            if abs(diff) > 15:  # Only show significant correlations
+                tag_insights.append({
+                    'icon': '🏷️',
+                    'text': f"#{tag.name} is associated with {abs(diff):.0f}% {'higher' if diff > 0 else 'lower'} intensity"
+                })
+    
+    insights.extend(tag_insights[:3])  # Top 3 tag insights
+    
+    return render(request, 'insights_dashboard.html', {'insights': insights})
+
+
+
+
+@login_required
+def api_moods(request):
+    moods = Mood.objects.filter(user=request.user).order_by('-timestamp')[:10]
+    data = [{
+        'emotion': mood.emotion,
+        'intensity': mood.intensity,
+        'timestamp': mood.timestamp.isoformat(),
+        'tags': [tag.name for tag in mood.tags.all()]
+    } for mood in moods]
+    return JsonResponse({'moods': data})

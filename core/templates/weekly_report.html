@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="container">
+        <h1>📊 Weekly Emotion Report</h1>
+        <div class="date-range">Week of December 11 - December 17, 2024</div>
+
+        <div class="summary">
+            <div class="summary-card">
+                <h3>Total Entries</h3>
+                <div class="value">42</div>
+            </div>
+            <div class="summary-card">
+                <h3>Dominant Emotion</h3>
+                <div class="value">😊</div>
+            </div>
+            <div class="summary-card">
+                <h3>Mood Trend</h3>
+                <div class="value">↗ Positive</div>
+            </div>
+        </div>
+
+        <div class="chart-section">
+            <h2>Emotion Breakdown</h2>
+            <div class="emotion-breakdown">
+                <div class="emotion-item">
+                    <div class="emotion-label">😊 Happy</div>
+                    <div class="emotion-bar">
+                        <div class="emotion-bar-fill" style="width: 35%; background: #FFD700;"></div>
+                    </div>
+                    <div class="emotion-percentage">35%</div>
+                </div>
+                <div class="emotion-item">
+                    <div class="emotion-label">😌 Calm</div>
+                    <div class="emotion-bar">
+                        <div class="emotion-bar-fill" style="width: 25%; background: #87CEEB;"></div>
+                    </div>
+                    <div class="emotion-percentage">25%</div>
+                </div>
+                <div class="emotion-item">
+                    <div class="emotion-label">😐 Neutral</div>
+                    <div class="emotion-bar">
+                        <div class="emotion-bar-fill" style="width: 20%; background: #A9A9A9;"></div>
+                    </div>
+                    <div class="emotion-percentage">20%</div>
+                </div>
+                <div class="emotion-item">
+                    <div class="emotion-label">😟 Anxious</div>
+                    <div class="emotion-bar">
+                        <div class="emotion-bar-fill" style="width: 12%; background: #FF6B6B;"></div>
+                    </div>
+                    <div class="emotion-percentage">12%</div>
+                </div>
+                <div class="emotion-item">
+                    <div class="emotion-label">😢 Sad</div>
+                    <div class="emotion-bar">
+                        <div class="emotion-bar-fill" style="width: 8%; background: #4169E1;"></div>
+                    </div>
+                    <div class="emotion-percentage">8%</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="insights">
+            <h2>Weekly Insights</h2>
+            <ul>
+                <li>Your overall mood has been positive this week with a 35% happy rating.</li>
+                <li>You experienced the most anxiety on Tuesday and Wednesday.</li>
+                <li>Calm moments peaked on the weekend.</li>
+                <li>Consider activities that promote relaxation during weekdays.</li>
+            </ul>
+        </div>
+    </div>
+{% endblock %}

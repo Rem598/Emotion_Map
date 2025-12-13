@@ -19,4 +19,7 @@ urlpatterns = [
     # Public intervention pages
     path('interventions/', views.interventions_list, name='interventions_list'),
     path('interventions/submit/', views.submit_intervention, name='submit_intervention'),
+    path('weekly_report/', views.weekly_report, name='weekly_report'),
+    path('insights_dashboard/', views.insights_dashboard, name='insights_dashboard'),
+    path('comparison/', views.comparison_view, name='comparison'),
 ]
