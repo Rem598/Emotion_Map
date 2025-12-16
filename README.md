@@ -4,8 +4,8 @@
 
 A Django web application that helps users gain emotional self-awareness through fast mood logging, data-driven micro-interventions, and intelligent pattern recognition. Built to support **UN SDG 3: Good Health and Well-being**.
 
-![Django](https://img.shields.io/badge/Django-5.0.7-green)
-![Python](https://img.shields.io/badge/Python-3.11+-blue)
+![Django](https://img.shields.io/badge/Django-green)
+![Python](https://img.shields.io/badge/Python-blue)
 ![License](https://img.shields.io/badge/License-MIT-yellow)
 
 ---
