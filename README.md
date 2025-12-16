@@ -59,7 +59,6 @@ A Django web application that helps users gain emotional self-awareness through 
 
 ### 5. **Interactive UI**
 - Clean, modern design with custom CSS
-- HTMX for seamless page updates
 - Chart.js for interactive data visualizations
 
 ---
