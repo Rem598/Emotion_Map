@@ -20,7 +20,7 @@ urlpatterns = [
     path('mood/edit/<int:mood_id>/', views.edit_mood, name='edit_mood'),
     path('mood/delete/<int:mood_id>/', views.delete_mood, name='delete_mood'),
     
-    # New features
+    # features
     path('export/', views.export_moods_csv, name='export_moods'),
     path('weekly-report/', views.weekly_report, name='weekly_report'),
     path('comparison/', views.comparison_view, name='comparison'),
