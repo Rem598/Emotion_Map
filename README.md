@@ -87,48 +87,6 @@ This project directly supports **UN SDG 3: Good Health and Well-being** by:
 | Language | Python  |
 | Authentication | Django Auth System |
 
----
-
-## 📊 Project Structure
-
-```
-emotion-map/
-├── core/                          # Main Django app
-│   ├── models.py                  # Database models (Mood, Intervention, Feedback, Tag)
-│   ├── views.py                   # View logic and data processing
-│   ├── forms.py                   # Django forms for user input
-│   ├── urls.py                    # URL routing
-│   ├── admin.py                   # Admin panel configuration
-│   ├── templates/                 # HTML templates
-│   │   ├── base.html             # Base template with navigation
-│   │   ├── home.html             # Landing page
-│   │   ├── dashboard.html        # Main dashboard with charts
-│   │   ├── login.html            # User login
-│   │   ├── register.html         # User registration
-│   │   ├── log_mood.html         # Mood logging form
-│   │   ├── intervention_suggestion.html
-│   │   ├── heatmap.html          # Emotional heatmap
-│   │   ├── correlations.html     # Pattern insights
-│   │   ├── interventions_list.html
-│   │   └── submit_intervention.html
-│   └── management/
-│       └── commands/
-│           └── seed_interventions.py  # Data seeding command
-├── emotion_map/                   # Django project settings
-│   ├── settings.py               # Project configuration
-│   ├── urls.py                   # Main URL routing
-│   └── wsgi.py                   # WSGI configuration
-├── static/                        # Static files
-│   ├── css/
-│   │   └── main.css              # Custom styles
-│   └── js/
-│       ├── dashboard.js          # Dashboard chart logic
-│       └── heatmap.js            # Heatmap visualization
-├── requirements.txt              # Python dependencies
-├── manage.py                     # Django management script
-├── LICENSE                       # MIT License
-└── README.md                     # This file
-```
 
 ---
 
