@@ -23,8 +23,9 @@
                     <a href="{% url 'dashboard' %}" class="nav-link" style="font-weight: 600;">🏠 Dashboard</a>
                     <a href="{% url 'log_mood' %}" class="nav-link-primary">+ Log Mood</a>
                     <a href="{% url 'heatmap' %}" class="nav-link">Heatmap</a>
-                    <a href="{% url 'insights_dashboard' %}" class="nav-link">AI Insights</a>
+                    <a href="{% url 'insights_dashboard' %}" class="nav-link">Insights</a>
                     <a href="{% url 'interventions_list' %}" class="nav-link">Interventions</a>
+                    <!-- <a href="{% url 'correlations' %}" class="nav-link">Correlations</a> -->
                     <a href="{% url 'logout' %}" class="nav-link" style="color: #ef4444;">Logout ({{ user.username }})</a>
                 {% else %}
                     <a href="{% url 'interventions_list' %}" class="nav-link">Interventions</a>
